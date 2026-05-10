@@ -291,9 +291,12 @@ export default function Index() {
   useEffect(() => {
     const handleKey = (e: KeyboardEvent, down: boolean) => {
       const g = gameRef.current;
-      if (!g) return;
-      if (down) g.keys.add(e.key.toLowerCase());
-      else g.keys.delete(e.key.toLowerCase());
+      // Always update keys even if no game yet — store in a global fallback
+      const key = e.key.toLowerCase();
+      if (g) {
+        if (down) g.keys.add(key);
+        else g.keys.delete(key);
+      }
 
       if (down && (e.key === 'e' || e.key === 'E') && (g.phase === 'playing' || g.phase === 'nearExit')) {
         const p = g.player;
@@ -310,7 +313,11 @@ export default function Index() {
         }
       }
     };
-    const onDown = (e: KeyboardEvent) => { e.preventDefault(); handleKey(e, true); };
+    const onDown = (e: KeyboardEvent) => {
+      const gamKeys = ['arrowleft','arrowright','arrowup','arrowdown','a','w','s','d','e',' '];
+      if (gamKeys.includes(e.key.toLowerCase())) e.preventDefault();
+      handleKey(e, true);
+    };
     const onUp = (e: KeyboardEvent) => handleKey(e, false);
     window.addEventListener('keydown', onDown);
     window.addEventListener('keyup', onUp);
@@ -705,10 +712,8 @@ export default function Index() {
       ctx.globalAlpha = 1;
     }
 
-    let lastTs = 0;
-    function loop(ts: number) {
-      if (ts - lastTs > 0) update();
-      lastTs = ts;
+    function loop(_ts: number) {
+      update();
       draw();
       animId = requestAnimationFrame(loop);
     }
@@ -732,7 +737,13 @@ export default function Index() {
 
   return (
     <div className="flex items-center justify-center w-screen h-screen bg-[#050609] scanlines">
-      <div className="relative select-none" style={{ width: VIEW_W, height: VIEW_H }}>
+      <div
+        className="relative select-none outline-none"
+        style={{ width: VIEW_W, height: VIEW_H }}
+        tabIndex={0}
+        ref={el => el && el.focus()}
+        onClick={e => (e.currentTarget as HTMLDivElement).focus()}
+      >
         <canvas ref={canvasRef} width={VIEW_W} height={VIEW_H} className="block" />
         <div className="noise-overlay" />
         <div className="vignette" />
@@ -774,14 +785,45 @@ export default function Index() {
               </div>
             )}
 
-            {/* Controls */}
-            {!hidden && !nearExit && (
-              <div className="absolute bottom-3 left-3 hud-panel px-3 py-1.5 rounded pointer-events-none">
-                <span className="text-[9px]" style={{ color: 'rgba(232,184,75,0.38)', fontFamily: 'IBM Plex Sans' }}>
-                  <span style={{ color: 'rgba(232,184,75,0.6)' }}>WASD</span> — движение &nbsp;·&nbsp; <span style={{ color: 'rgba(232,184,75,0.6)' }}>E</span> — укрытие
-                </span>
-              </div>
-            )}
+            {/* D-pad controls */}
+            {!nearExit && (() => {
+              const pressKey = (key: string) => {
+                const g = gameRef.current;
+                if (g) g.keys.add(key);
+              };
+              const releaseKey = (key: string) => {
+                const g = gameRef.current;
+                if (g) g.keys.delete(key);
+              };
+              const btnStyle = {
+                background: 'rgba(232,184,75,0.15)',
+                border: '1px solid rgba(232,184,75,0.3)',
+                color: '#e8b84b',
+                width: 36, height: 36,
+                borderRadius: 6,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 14, cursor: 'pointer', userSelect: 'none' as const,
+                touchAction: 'none' as const,
+              };
+              const mk = (label: string, key: string) => (
+                <button
+                  style={btnStyle}
+                  onPointerDown={e => { e.preventDefault(); pressKey(key); }}
+                  onPointerUp={() => releaseKey(key)}
+                  onPointerLeave={() => releaseKey(key)}
+                >{label}</button>
+              );
+              return (
+                <div className="absolute bottom-3 right-3 flex flex-col items-center gap-1">
+                  <div>{mk('↑', 'arrowup')}</div>
+                  <div className="flex gap-1">{mk('←', 'arrowleft')}{mk('↓', 'arrowdown')}{mk('→', 'arrowright')}</div>
+                  <button
+                    style={{ ...btnStyle, width: 80, marginTop: 2, fontSize: 10, letterSpacing: '0.1em' }}
+                    onPointerDown={e => { e.preventDefault(); const g = gameRef.current; if(g){ const p=g.player; if(p.hidden){p.hidden=false;p.hiddenIn=-1;}else{g.hideSpots.forEach((hs,i)=>{if(rectOverlap(p.pos.x-p.size,p.pos.y-p.size,p.size*2,p.size*2,hs.pos.x,hs.pos.y,hs.size.x,hs.size.y)){p.hidden=true;p.hiddenIn=i;}});}} }}
+                  >УКРЫТЬСЯ</button>
+                </div>
+              );
+            })()}
 
             {/* Hidden */}
             {hidden && (
