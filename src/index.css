@@ -4,89 +4,50 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 220 20% 6%;
+    --foreground: 40 30% 88%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 220 18% 9%;
+    --card-foreground: 40 30% 88%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 220 18% 9%;
+    --popover-foreground: 40 30% 88%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 35 80% 55%;
+    --primary-foreground: 220 20% 6%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 220 15% 15%;
+    --secondary-foreground: 40 30% 88%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 220 15% 12%;
+    --muted-foreground: 220 10% 50%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-
-    --radius: 0.5rem;
-
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
-
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 0 70% 45%;
+    --accent-foreground: 40 30% 88%;
 
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 40 30% 88%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --border: 220 15% 18%;
+    --input: 220 15% 15%;
+    --ring: 35 80% 55%;
+
+    --radius: 0.25rem;
+
+    /* Game colors */
+    --game-bg: #0a0c10;
+    --game-wall: #1a1f2a;
+    --game-wall-light: #252d3a;
+    --game-floor: #111520;
+    --game-player: #e8b84b;
+    --game-enemy-1: #cc3333;
+    --game-enemy-2: #8833cc;
+    --game-enemy-3: #33aacc;
+    --game-hide: #2a3d2a;
+    --game-hide-border: #4a7a4a;
+    --game-danger: #ff4444;
+    --game-safe: #44ff88;
+    --shadow-color: rgba(0, 0, 0, 0.85);
   }
 }
 
@@ -97,5 +58,262 @@
 
   body {
     @apply bg-background text-foreground;
+    font-family: "IBM Plex Sans", sans-serif;
+    overflow: hidden;
   }
+}
+
+/* Game canvas styles */
+.game-container {
+  position: relative;
+  background: var(--game-bg);
+  overflow: hidden;
+}
+
+/* Player glow */
+.player-element {
+  filter: drop-shadow(0 0 8px var(--game-player))
+    drop-shadow(0 0 20px rgba(232, 184, 75, 0.4));
+}
+
+/* Enemy pulse */
+.enemy-element {
+  animation: enemy-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes enemy-pulse {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 6px currentColor);
+  }
+  50% {
+    filter: drop-shadow(0 0 14px currentColor)
+      drop-shadow(0 0 28px currentColor);
+  }
+}
+
+/* Hiding spot shimmer */
+.hide-spot {
+  animation: hide-shimmer 3s ease-in-out infinite;
+}
+
+@keyframes hide-shimmer {
+  0%,
+  100% {
+    box-shadow: inset 0 0 10px rgba(74, 122, 74, 0.2);
+  }
+  50% {
+    box-shadow:
+      inset 0 0 20px rgba(74, 122, 74, 0.5),
+      0 0 8px rgba(74, 122, 74, 0.3);
+  }
+}
+
+/* Screen shake on danger */
+@keyframes screen-shake {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  10% {
+    transform: translate(-3px, -2px);
+  }
+  20% {
+    transform: translate(3px, 2px);
+  }
+  30% {
+    transform: translate(-3px, 2px);
+  }
+  40% {
+    transform: translate(3px, -2px);
+  }
+  50% {
+    transform: translate(-2px, 3px);
+  }
+  60% {
+    transform: translate(2px, -3px);
+  }
+  70% {
+    transform: translate(-3px, -2px);
+  }
+  80% {
+    transform: translate(3px, 2px);
+  }
+  90% {
+    transform: translate(-2px, 2px);
+  }
+}
+
+.shake {
+  animation: screen-shake 0.5s ease-in-out;
+}
+
+/* Noise texture overlay */
+.noise-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+  opacity: 0.6;
+  z-index: 100;
+  mix-blend-mode: overlay;
+}
+
+/* Vignette */
+.vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 40%,
+    rgba(0, 0, 0, 0.7) 100%
+  );
+  z-index: 50;
+}
+
+/* HUD styles */
+.hud-panel {
+  background: linear-gradient(
+    135deg,
+    rgba(10, 12, 16, 0.95) 0%,
+    rgba(20, 25, 35, 0.9) 100%
+  );
+  border: 1px solid rgba(232, 184, 75, 0.2);
+  backdrop-filter: blur(4px);
+}
+
+/* Scanline effect */
+.scanlines::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.08) 2px,
+    rgba(0, 0, 0, 0.08) 4px
+  );
+  pointer-events: none;
+  z-index: 200;
+}
+
+/* Text glow */
+.text-glow-amber {
+  text-shadow:
+    0 0 10px rgba(232, 184, 75, 0.8),
+    0 0 20px rgba(232, 184, 75, 0.4);
+}
+
+.text-glow-red {
+  text-shadow:
+    0 0 10px rgba(255, 68, 68, 0.9),
+    0 0 20px rgba(255, 68, 68, 0.5);
+}
+
+.text-glow-green {
+  text-shadow:
+    0 0 10px rgba(68, 255, 136, 0.8),
+    0 0 20px rgba(68, 255, 136, 0.4);
+}
+
+/* Death screen */
+@keyframes fade-red {
+  0% {
+    opacity: 0;
+  }
+  30% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.death-flash {
+  animation: fade-red 0.8s ease-out forwards;
+}
+
+/* Level transition */
+@keyframes level-flash {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.1);
+  }
+}
+
+.level-flash {
+  animation: level-flash 1.5s ease-in-out forwards;
+}
+
+/* Footstep pulse */
+@keyframes footstep {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}
+
+.footstep-ring {
+  animation: footstep 0.6s ease-out forwards;
+}
+
+/* Progress bar pulse */
+@keyframes danger-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.danger-bar {
+  animation: danger-pulse 0.8s ease-in-out infinite;
+}
+
+/* Button hover glow */
+.btn-game {
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-game::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), transparent);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.btn-game:hover::before {
+  opacity: 1;
+}
+
+.btn-game:hover {
+  box-shadow:
+    0 0 20px rgba(232, 184, 75, 0.4),
+    0 0 40px rgba(232, 184, 75, 0.2);
+  transform: translateY(-1px);
+}
+
+.btn-game:active {
+  transform: translateY(0);
 }
